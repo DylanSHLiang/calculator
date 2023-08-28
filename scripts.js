@@ -59,6 +59,30 @@ dot.addEventListener("click", element => {
     }
 });
 
+function operate(n1, n2, op) {
+    console.log("begin");
+    console.log(n1);
+    console.log(n2);
+    console.log(op);
+    console.log("end");
+    if (op == "÷") {
+        if (n2 == "0") {
+            alert("Can't divide by 0!");
+            return NaN;
+        }
+        return n1 / n2;
+    }
+    if (op == "x") {
+        return n1 * n2;
+    }
+    if (op == "-") {
+        return n1 - n2;
+    }
+    if (op == "+") {
+        return n1 + n2;
+    }
+}
+
 equal.addEventListener("click", () => {
     if (
         display.innerText[display.innerText.length - 1] != '÷' && 
@@ -66,7 +90,15 @@ equal.addEventListener("click", () => {
         display.innerText[display.innerText.length - 1] != '-' && 
         display.innerText[display.innerText.length - 1] != '+' 
     ) {
-        let numbers = display.innerText.split('/[÷x-+]/')
-        console.log(numbers);
+        let nums = display.innerText.split(/[÷x+-]/g);
+        let ops = display.innerText.split(/[0-9]/g);
+        var i = 0;
+        console.log(nums.reduce((total, curr) => {
+            while (ops[i] == '') {
+                i++;
+            }
+            i++;
+            return operate(total, curr, ops[i - 1]);
+        }));
     }
 });
