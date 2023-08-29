@@ -23,18 +23,16 @@ clear.addEventListener("click", () => {
 operations.forEach(button => {
     button.addEventListener("click", element => {
         if (display.innerText.length < 14) {
-            if (element.target.innerText == "÷" || element.target.innerText == "x") {
-                if (
-                    display.innerText[display.innerText.length - 1] != "÷" && 
-                    display.innerText[display.innerText.length - 1] != "x" && 
-                    display.innerText[display.innerText.length - 1] != "-" && 
-                    display.innerText[display.innerText.length - 1] != "+" 
-                ) {
-                    display.innerText = display.innerText.concat(element.target.innerText);
-                }
-            } else {
-                display.innerText = display.innerText.concat(element.target.innerText);
+            if (
+                display.innerText[display.innerText.length - 1] == "÷" || 
+                display.innerText[display.innerText.length - 1] == "x" || 
+                display.innerText[display.innerText.length - 1] == "-" || 
+                display.innerText[display.innerText.length - 1] == "+" ||
+                display.innerText == "0"
+            ) {
+                display.innerText = display.innerText.slice(0, display.innerText.length - 1);
             }
+            display.innerText = display.innerText.concat(element.target.innerText);
         }
     });
 });
@@ -60,11 +58,6 @@ dot.addEventListener("click", element => {
 });
 
 function operate(n1, n2, op) {
-    console.log("begin");
-    console.log(n1);
-    console.log(n2);
-    console.log(op);
-    console.log("end");
     if (op == "÷") {
         if (n2 == "0") {
             alert("Can't divide by 0!");
@@ -83,6 +76,41 @@ function operate(n1, n2, op) {
     }
 }
 
+function evalTerm(s) {
+    let terms = s.split(/[x÷]/);
+    let ops = s.split(/[0-9]/);
+    var i = 0;
+    if (terms.length == 1) {
+        return terms[0];
+    }
+    return terms.reduce((total, curr) => {
+        while (ops[i] == '' && i < ops.length) {
+            i++;
+        }
+        i++;      
+        return operate(total, curr, ops[i - 1]);
+    })
+}
+
+function evalString(s) {
+    let terms = s.split(/[+-]/);
+    let ops = s.split(/[0-9x÷]/);
+    var j = 0;
+    if (terms.length == 1) {
+        return evalTerm(terms[0]);
+    }
+    for (let i = 0; i < terms.length; i++) {
+        terms[i] = evalTerm(terms[i]);
+    }
+    return terms.reduce((total, curr) => {
+        while (ops[j] == '' && j < ops.length) {
+            j++;
+        }
+        j++
+        return operate(total, curr, ops[j - 1]);
+    })
+}
+
 equal.addEventListener("click", () => {
     if (
         display.innerText[display.innerText.length - 1] != '÷' && 
@@ -90,15 +118,6 @@ equal.addEventListener("click", () => {
         display.innerText[display.innerText.length - 1] != '-' && 
         display.innerText[display.innerText.length - 1] != '+' 
     ) {
-        let nums = display.innerText.split(/[÷x+-]/g);
-        let ops = display.innerText.split(/[0-9]/g);
-        var i = 0;
-        console.log(nums.reduce((total, curr) => {
-            while (ops[i] == '') {
-                i++;
-            }
-            i++;
-            return operate(total, curr, ops[i - 1]);
-        }));
+        display.innerText = evalString(display.innerText);
     }
 });
