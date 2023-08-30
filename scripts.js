@@ -5,6 +5,7 @@ const operations = document.querySelectorAll(".divide,.multiply,.subtract,.add")
 const numbers = document.querySelectorAll(".zero,.one,.two,.three,.four,.five,.six,.seven,.eight,.nine")
 const dot = document.querySelector(".dot");
 const equal = document.querySelector(".equal");
+const max = 14;
 
 del.addEventListener("click", () => {
     if (display.innerText != "0") {
@@ -22,13 +23,12 @@ clear.addEventListener("click", () => {
 
 operations.forEach(button => {
     button.addEventListener("click", element => {
-        if (display.innerText.length < 14) {
+        if (display.innerText.length < max) {
             if (
                 display.innerText[display.innerText.length - 1] == "÷" || 
                 display.innerText[display.innerText.length - 1] == "x" || 
                 display.innerText[display.innerText.length - 1] == "-" || 
-                display.innerText[display.innerText.length - 1] == "+" ||
-                display.innerText == "0"
+                display.innerText[display.innerText.length - 1] == "+"
             ) {
                 display.innerText = display.innerText.slice(0, display.innerText.length - 1);
             }
@@ -58,27 +58,28 @@ dot.addEventListener("click", element => {
 });
 
 function operate(n1, n2, op) {
+    n1 = Number(n1);
+    n2 = Number(n2);
+    var result = 0;
     if (op == "÷") {
         if (n2 == "0") {
             alert("Can't divide by 0!");
-            return NaN;
+            result = NaN;
         }
-        return n1 / n2;
+        result = n1 / n2;
+    } else if (op == "x") {
+        result = n1 * n2;
+    } else if (op == "-") {
+        result = n1 - n2;
+    } else if (op == "+") {
+        result = n1 + n2;
     }
-    if (op == "x") {
-        return n1 * n2;
-    }
-    if (op == "-") {
-        return n1 - n2;
-    }
-    if (op == "+") {
-        return n1 + n2;
-    }
+    return Math.round(result * 100) / 100;
 }
 
 function evalTerm(s) {
     let terms = s.split(/[x÷]/);
-    let ops = s.split(/[0-9]/);
+    let ops = s.split(/[0-9.]/);
     var i = 0;
     if (terms.length == 1) {
         return terms[0];
@@ -94,14 +95,14 @@ function evalTerm(s) {
 
 function evalString(s) {
     let terms = s.split(/[+-]/);
-    let ops = s.split(/[0-9x÷]/);
-    var j = 0;
+    let ops = s.split(/[0-9x÷.]/);
     if (terms.length == 1) {
         return evalTerm(terms[0]);
     }
     for (let i = 0; i < terms.length; i++) {
         terms[i] = evalTerm(terms[i]);
     }
+    var j = 0;
     return terms.reduce((total, curr) => {
         while (ops[j] == '' && j < ops.length) {
             j++;
@@ -119,5 +120,6 @@ equal.addEventListener("click", () => {
         display.innerText[display.innerText.length - 1] != '+' 
     ) {
         display.innerText = evalString(display.innerText);
+
     }
 });
